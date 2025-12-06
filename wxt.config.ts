@@ -8,9 +8,18 @@ export default defineConfig({
     action: {
       default_title: 'Drop Assets Into Your Engine.',
     },
+    browser_specific_settings: {
+      gecko: {
+        id: "asset-drop@assetdrop.io",
+        // @ts-ignore
+        data_collection_permissions: {
+          required: ['none'],
+          optional: [],
+        }
+      }
+    }
   },
-    autoIcons: {
-      sizes: [16, 32, 48, 96, 128]
-    },
-
-  });
+  autoIcons: {
+    sizes: [16, 32, 48, 96, 128]
+  },
+});
