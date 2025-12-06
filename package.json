@@ -2,7 +2,7 @@
   "name": "asset-drop",
   "description": "Download assets from any asset store into your game engine.",
   "private": true,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "scripts": {
     "dev": "wxt -b firefox",

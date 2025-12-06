@@ -53,8 +53,6 @@ jobs:
         run: npm ci
       - name: Zip extensions
         run: npm run zip
-      # (Note: This step will fail if you haven't set up Firefox secrets yet,
-      # but that's separate from the GitHub release error)
       - name: Submit to Firefox Addons
         run: |
           npx wxt submit \
