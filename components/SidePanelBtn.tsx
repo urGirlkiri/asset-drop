@@ -25,7 +25,7 @@ const SidePanelBtn = () => {
             onClick={handleOpenSidePanel}
             className="flex flex-row justify-center items-center self-center gap-2 bg-red-500 hover:bg-red-400 p-2 rounded-lg w-fit text-white">
             <Info />
-            <p className="font-semibold text-sm text-center">Use Extension In SidePanel To Activate Dropzone</p>
+            <p className="font-semibold text-sm text-center">Open Side Panel to Enable Dropzone</p>
         </button>
     )
 }
