@@ -2,7 +2,7 @@
   "name": "asset-drop",
   "description": "Download assets from any asset store into your game engine.",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.6",
   "type": "module",
   "scripts": {
     "dev": "wxt -b firefox",
@@ -17,9 +17,11 @@
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.17",
     "clsx": "^2.1.1",
+    "lucide-react": "^0.563.0",
     "postcss": "^8.5.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-dropzone": "^14.3.8",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.17"
   },

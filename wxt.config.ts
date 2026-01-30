@@ -2,9 +2,14 @@ import { defineConfig } from 'wxt';
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react', '@wxt-dev/auto-icons'],
-  manifest: {
+
+  manifest: (env) => ({
     name: 'Asset Drop',
     description: 'Download assets from any asset store into your game engine.',
+    permissions: [
+      ...(env.browser === 'firefox' ? [] : ['sidePanel']),
+    ],
+
     action: {
       default_title: 'Drop Assets Into Your Engine.',
     },
@@ -17,8 +22,15 @@ export default defineConfig({
           optional: [],
         }
       }
-    }
-  },
+    },
+    ...(env.browser === 'firefox' && {
+      sidebar_action: {
+        default_panel: "sidepanel.html",
+        default_title: "Asset Drop",
+        default_icon: "icons/32.png"
+      }
+    })
+  }),
   autoIcons: {
     sizes: [16, 32, 48, 96, 128]
   },
