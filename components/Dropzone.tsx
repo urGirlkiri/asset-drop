@@ -28,7 +28,7 @@ const Dropzone = ({ isPanel = false }) => {
     const [hasDownloaded, setHasDownloaded] = useState(false)
     const [progress, setProgress] = useState(0)
 
-    useEffect(() => {
+useEffect(() => {
         const handleRuntimeMessage = (message: any) => {
             if (message.type === 'DOWNLOAD_PROGRESS') {
                 setProgress(message.progress)
@@ -39,8 +39,17 @@ const Dropzone = ({ isPanel = false }) => {
 
             if (message.type === 'DOWNLOAD_COMPLETE') {
                 setProgress(100)
-                // TODO:  wait for the Native Host "Unzip Success"  message before showing the final "Complete" screen.
                 setTimeout(() => setHasDownloaded(true), 1000)
+            }
+
+            if (message.type === 'DOWNLOAD_INTERRUPTED') {
+                toast.error("Download Failed: " + (message.error || "Interrupted"))
+                
+                setDroppedLink(null)
+                setAssetName(null)
+                setAssetSize(null)
+                setProgress(0)
+                setHasDownloaded(false)
             }
         }
 
@@ -130,7 +139,7 @@ const Dropzone = ({ isPanel = false }) => {
             {
                 hasDownloaded ?
                     <div className="flex flex-col flex-1 gap-6 animate-in duration-300 fade-in">
-                        <div className="flex flex-1 justify-center items-center grid-pattern grid-sm bg-gray-50/50 border border-gray-100 rounded-xl">
+                        <div className="flex flex-1 justify-center items-center grid-pattern grid-sm bg-gray-50/50 border border-gray-100 rounded-xl w-full">
                             <div className="relative">
                                 <div className="bg-blue-500/10 p-6 rounded-2xl">
                                     <Folder size={80} className="fill-blue-500 text-blue-500" />
@@ -147,7 +156,7 @@ const Dropzone = ({ isPanel = false }) => {
                         </div>
 
                         <div className="flex gap-2">
-                            <div className="flex flex-1 items-center gap- bg-white shadow-sm px-3 py-3 border border-gray-200 rounded-lg">
+                            <div className="flex flex-1 items-center gap-3 bg-white shadow-sm px-3 py-3 border border-gray-200 rounded-lg w-10">
                                 <p className="flex-1 text-gray-600 text-sm truncate">{droppedLink}</p>
                                 <button onClick={copyToClipboard} className="text-gray-400 hover:text-gray-700">
                                     <Copy size={18} />

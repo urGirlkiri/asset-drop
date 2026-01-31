@@ -55,6 +55,7 @@ export default defineBackground(() => {
       browser.downloads.download({
         url: message.url,
         conflictAction: 'uniquify',
+        filename: `AssetDrop/${message.filename ?? 'asset'}`,
         saveAs: false
       }, (downloadId) => {
         if (browser.runtime.lastError) {
@@ -82,6 +83,7 @@ export default defineBackground(() => {
         browser.downloads.search({ id: downloadId }, (results) => {
           if (results && results[0]) {
             const fullDownloadPath = results[0].filename
+            console.log(fullDownloadPath)
 
             browser.runtime.sendMessage({
               type: 'DOWNLOAD_COMPLETE',
@@ -94,8 +96,13 @@ export default defineBackground(() => {
           }
         })
       } 
-      else if (currentState === 'interrupted') {
-        console.log(`Download ${downloadId} interrupted`)
+     else if (currentState === 'interrupted') {
+        browser.runtime.sendMessage({
+          type: 'DOWNLOAD_INTERRUPTED',
+          id: downloadId,
+          error: "Network error or User cancelled"
+        }).catch(() => {})
+
         activeDownloads.delete(downloadId)
         storageMap.delete(downloadId)
       }
