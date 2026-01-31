@@ -6,6 +6,7 @@ export default defineBackground(() => {
   const storageMap = new Map<number, object>()
   const activeDownloads = new Set<number>()
   let progressInterval: ReturnType<typeof setInterval> | null = null
+  const nativePort = connectToHost()
 
   const startPolling = () => {
     if (progressInterval) return
