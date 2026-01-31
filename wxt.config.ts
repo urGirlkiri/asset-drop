@@ -8,6 +8,7 @@ export default defineConfig({
     description: 'Download assets from any asset store into your game engine.',
     permissions: [
       ...(env.browser === 'firefox' ? [] : ['sidePanel']),
+      'nativeMessaging','downloads'
     ],
 
     action: {

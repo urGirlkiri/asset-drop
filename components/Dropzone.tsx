@@ -3,11 +3,18 @@ import toast from "react-hot-toast"
 
 
 const projects = [
-    'Project 1',
-    'Project 2',
-    'Project 3',
-    'Project 4',
-    'Project 5',
+    {
+        name: 'Project 1',
+        filePath: '/home/Downloads'
+    },
+    {
+        name: 'Project 2',
+        filePath: '/home/Downloads'
+    },
+    {
+        name: 'Project 3',
+        filePath: '/home/Downloads'
+    }
 ]
 
 const Dropzone = ({ isPanel = false }) => {
@@ -22,21 +29,25 @@ const Dropzone = ({ isPanel = false }) => {
     const [progress, setProgress] = useState(0)
 
     useEffect(() => {
-        if (droppedLink && !hasDownloaded) {
-            setProgress(0)
-            const interval = setInterval(() => {
-                setProgress((prev) => {
-                    if (prev >= 100) {
-                        clearInterval(interval)
-                        setTimeout(() => setHasDownloaded(true), 500)
-                        return 100
-                    }
-                    return prev + 2
-                })
-            }, 50)
-            return () => clearInterval(interval)
+        const handleRuntimeMessage = (message: any) => {
+            if (message.type === 'DOWNLOAD_PROGRESS') {
+                setProgress(message.progress)
+                setAssetName(message.filename)
+                const sizeInMB = (message.totalBytes / (1024 * 1024)).toFixed(2)
+                setAssetSize(`${sizeInMB} MB`)
+            }
+
+            if (message.type === 'DOWNLOAD_COMPLETE') {
+                setProgress(100)
+                // TODO:  wait for the Native Host "Unzip Success"  message before showing the final "Complete" screen.
+                setTimeout(() => setHasDownloaded(true), 1000)
+            }
         }
-    }, [droppedLink, hasDownloaded])
+
+        browser.runtime.onMessage.addListener(handleRuntimeMessage)
+
+        return () => browser.runtime.onMessage.removeListener(handleRuntimeMessage)
+    }, [])
 
 
     const copyToClipboard = () => {
@@ -74,14 +85,13 @@ const Dropzone = ({ isPanel = false }) => {
         }
 
         setDroppedLink(link)
-        try {
-            const urlObj = new URL(link)
-            const filename = urlObj.pathname.split('/').pop() || "downloaded_asset"
-            setAssetName(filename)
-        } catch (e) {
-            setAssetName("Asset Link")
-        }
-        setAssetSize("128 KB")
+
+        browser.runtime.sendMessage({
+            type: 'PROCESS_ASSET',
+            url: link,
+            targetProject: selectedProject
+        })
+
     }
 
     const handleReset = () => {
@@ -104,13 +114,13 @@ const Dropzone = ({ isPanel = false }) => {
                     </div>
 
                     <select
-                        onChange={(e) => setSelectedProject(e.target.value)}
-                        value={selectedProject}
+                        onChange={(e) => setSelectedProject(projects.find((project) => project.name === e.target.value)!)}
+                        value={selectedProject.name}
                         className="self-center p-3 border-2 border-gray-300 hover:border-gray-500 rounded-lg w-48"
                     >
                         {
                             projects.map((project, index) => (
-                                <option key={index} value={project} className="font-bold">{project}</option>
+                                <option key={index} value={project.name} className="font-bold">{project.name}</option>
                             ))
                         }
                     </select>
@@ -120,7 +130,7 @@ const Dropzone = ({ isPanel = false }) => {
             {
                 hasDownloaded ?
                     <div className="flex flex-col flex-1 gap-6 animate-in duration-300 fade-in">
-                        <div className="flex flex-1 justify-center items-center grid-pattern grid-sm bg-gray-50/50 border border-gray-100 rounded-xl w-full">
+                        <div className="flex flex-1 justify-center items-center grid-pattern grid-sm bg-gray-50/50 border border-gray-100 rounded-xl">
                             <div className="relative">
                                 <div className="bg-blue-500/10 p-6 rounded-2xl">
                                     <Folder size={80} className="fill-blue-500 text-blue-500" />
