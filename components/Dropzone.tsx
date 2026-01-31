@@ -1,4 +1,5 @@
-import { Download, Plus, Link as LinkIcon, CheckCircle } from "lucide-react"
+import { Download, Plus, Link as LinkIcon, CheckCircle, Copy, Folder } from "lucide-react"
+import CircleProgress from "./CircleProgress"
 
 const projects = [
     'Project 1',
@@ -17,9 +18,32 @@ const Dropzone = ({ isPanel = false }) => {
 
     const [isDragging, setIsDragging] = useState(false)
     const [hasDownloaded, setHasDownloaded] = useState(false)
+    const [progress, setProgress] = useState(0)
+
+    useEffect(() => {
+        if (droppedLink && !hasDownloaded) {
+            setProgress(0)
+            const interval = setInterval(() => {
+                setProgress((prev) => {
+                    if (prev >= 100) {
+                        clearInterval(interval)
+                        setTimeout(() => setHasDownloaded(true), 500)
+                        return 100
+                    }
+                    return prev + 2
+                })
+            }, 50)
+            return () => clearInterval(interval)
+        }
+    }, [droppedLink, hasDownloaded])
 
 
-
+    const copyToClipboard = () => {
+        if (droppedLink) {
+            navigator.clipboard.writeText(droppedLink)
+            // TODO: Add a toast notification here
+        }
+    }
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault()
         e.stopPropagation()
@@ -41,11 +65,18 @@ const Dropzone = ({ isPanel = false }) => {
 
         if (link) {
             setDroppedLink(link)
-            console.log("Captured Link:", link)
+            setAssetName(link.split('/').pop()!)
+            setAssetSize("128 KB")
         }
     }
 
-    const handleReset = () => setDroppedLink(null)
+    const handleReset = () => {
+        setDroppedLink(null)
+        setAssetName(null)
+        setAssetSize(null)
+        setProgress(0)
+        setHasDownloaded(false)
+    }
 
     return (
         <div className="flex flex-col flex-1 gap-4">
@@ -74,26 +105,43 @@ const Dropzone = ({ isPanel = false }) => {
 
             {
                 hasDownloaded ?
-                    <div className="flex flex-col flex-1 gap-8">
-                        <div className="grid-pattern grid-sm w-full h-3/4">
-
+                    <div className="flex flex-col flex-1 gap-6 animate-in duration-300 fade-in">
+                        <div className="flex flex-1 justify-center items-center grid-pattern grid-sm bg-gray-50/50 border border-gray-100 rounded-xl w-full">
+                            <div className="relative">
+                                <div className="bg-blue-500/10 p-6 rounded-2xl">
+                                    <Folder size={80} className="fill-blue-500 text-blue-500" />
+                                </div>
+                                <div className="-right-2 -bottom-2 absolute bg-secondary-dark p-1.5 border-4 border-white rounded-full text-white">
+                                    <CheckCircle size={16} />
+                                </div>
+                            </div>
                         </div>
 
-                        <div>
-
+                        <div className="flex flex-col gap-2">
+                            <h2 className="font-bold text-secondary-dark text-2xl">Complete!</h2>
+                            <p className="text-gray-500">Copy your link or <span className="hover:text-gray-700 underline cursor-pointer">look what's inside.</span></p>
                         </div>
 
-                        <div>
-
+                        <div className="flex gap-2">
+                            <div className="flex flex-1 items-center gap- bg-white shadow-sm px-3 py-3 border border-gray-200 rounded-lg">
+                                <p className="flex-1 text-gray-600 text-sm truncate">{droppedLink}</p>
+                                <button onClick={copyToClipboard} className="text-gray-400 hover:text-gray-700">
+                                    <Copy size={18} />
+                                </button>
+                            </div>
+                            <button
+                                onClick={handleReset}
+                                className="bg-secondary-dark hover:bg-black px-6 py-3 rounded-lg font-medium text-white transition-colors"
+                            >
+                                Send another?
+                            </button>
                         </div>
-
                     </div>
                     : droppedLink ?
                         <div className="flex flex-col flex-1 gap-8">
-                            <div className="grid-pattern grid-sm w-full h-3/4">
-
+                            <div className="flex flex-1 justify-center items-center grid-pattern grid-sm bg-gray-50/50 border border-gray-100 rounded-xl w-full">
+                                <CircleProgress progress={progress} />
                             </div>
-
 
                             <div className="flex justify-between">
                                 <div>
