@@ -7,33 +7,20 @@
   --color-secondary-dark: #2A3447;
   --color-accent-light: #3B82F6;
   --color-accent-dark: #3B82F6;
-  
+
   --color-text-primary-light: #000000;
   --color-text-primary-dark: #E2E8F0;
   --color-text-secondary-dark: #94A3B8;
-  
+
   --color-light-fill: #9AA5B4;
 }
 
-:root{
-    font-family: 'GeneralSans-Regular', sans-serif;
+:root {
+  font-family: 'GeneralSans-Regular', sans-serif;
 }
 
 @layer components {
-    
-  .font-large{
-    font-size: 39.06px;
-    font-weight: 800;
-    line-height: 1.47;
-    letter-spacing: 0.023em;
-  }
 
-  .font-medium {
-    font-size: 34.94px;
-    font-weight: 800;
-    line-height: 1.47;
-    letter-spacing: 0.023em;
-  }
 
   h1 {
     font-size: 31.25px;
@@ -70,26 +57,11 @@
     letter-spacing: 0.045em;
   }
 
-  .text-body {
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.52;
-    letter-spacing: 0.045em;
+  .grid-pattern {
+    background-image: linear-gradient(to right, #f0f0f0 1px, transparent 1px), linear-gradient(to bottom, #f0f0f0 1px, transparent 1px);
   }
 
-  .text-caption {
-    font-size: 13.53px;
-    font-weight: 400;
-    line-height: 1.57;
-    letter-spacing: 0.045em;
+  .grid-sm {
+    background-size: 20px 20px;
   }
-
-  .text-overline {
-    font-size: 12.11px;
-    font-weight: 500;
-    line-height: 1.57;
-    letter-spacing: 0.045em;
-    text-transform: uppercase;
-  }
-
 }
