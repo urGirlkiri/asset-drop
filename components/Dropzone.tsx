@@ -1,5 +1,6 @@
 import { Download, Plus, Link as LinkIcon, CheckCircle, Copy, Folder } from "lucide-react"
-import CircleProgress from "./CircleProgress"
+import toast from "react-hot-toast"
+
 
 const projects = [
     'Project 1',
@@ -41,9 +42,12 @@ const Dropzone = ({ isPanel = false }) => {
     const copyToClipboard = () => {
         if (droppedLink) {
             navigator.clipboard.writeText(droppedLink)
-            // TODO: Add a toast notification here
+            toast.success('Copied to clipboard!')
+        } else {
+            toast.error('No link to copy!')
         }
     }
+
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault()
         e.stopPropagation()
@@ -63,11 +67,21 @@ const Dropzone = ({ isPanel = false }) => {
 
         const link = e.dataTransfer.getData("text/uri-list") || e.dataTransfer.getData("text/plain")
 
-        if (link) {
-            setDroppedLink(link)
-            setAssetName(link.split('/').pop()!)
-            setAssetSize("128 KB")
+        const error = checkLink(link)
+        if (error) {
+            toast.error(error)
+            return
         }
+
+        setDroppedLink(link)
+        try {
+            const urlObj = new URL(link)
+            const filename = urlObj.pathname.split('/').pop() || "downloaded_asset"
+            setAssetName(filename)
+        } catch (e) {
+            setAssetName("Asset Link")
+        }
+        setAssetSize("128 KB")
     }
 
     const handleReset = () => {
@@ -144,11 +158,11 @@ const Dropzone = ({ isPanel = false }) => {
                             </div>
 
                             <div className="flex justify-between">
-                                <div>
-                                    <p className="text-gray-400 uppercase">Title</p>
+                                <div className="flex flex-col gap-2">
+                                    <p className="text-gray-400 uppercase">Asset</p>
                                     <p>{assetName}</p>
                                 </div>
-                                <div>
+                                <div className="flex flex-col gap-2">
                                     <p className="text-gray-400 uppercase">Size</p>
                                     <p>{assetSize}</p>
                                 </div>

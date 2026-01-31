@@ -1,3 +1,5 @@
+import { Toaster } from "react-hot-toast";
+
 const tabs = [
   {
     name: 'Dropzone',
@@ -26,7 +28,7 @@ function App({ isPanel = false }) {
   return (
     <main className='flex flex-col gap-2 bg-primary-light min-w-[400px] h-screen min-h-[500px]'>
       <Header />
-
+      <Toaster position="top-right"  />
       {(!isPanel && currentTab.name === 'Dropzone') && <SidePanelBtn />}
 
       <div className='flex flex-col flex-1 p-4'>
