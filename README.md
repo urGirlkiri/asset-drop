@@ -71,3 +71,18 @@ npm run zip
 
 
 ![alt text](assets/readme/done.png)
+
+
+## How to Debug
+
+### View Logs
+
+```bash
+tail -f /tmp/assetdrop_debug.log
+```
+
+### Clear Logs 
+
+```bash
+rm /tmp/assetdrop_debug.log
+```
