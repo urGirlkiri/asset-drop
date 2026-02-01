@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.17",
+    "adm-zip": "^0.5.16",
     "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
     "postcss": "^8.5.6",

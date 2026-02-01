@@ -1,4 +1,4 @@
-import handleMessage from "./src/handleMssage.js"
+import handleMessage from "./src/handleMessage.js"
 
 process.stdin.on('readable', () => {
     let input = []

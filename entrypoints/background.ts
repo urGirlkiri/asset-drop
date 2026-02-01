@@ -145,7 +145,7 @@ export default defineBackground(() => {
                 moveAsset,
                 unzipAsset,
                 // @ts-ignore
-                destination: targetProject.filePath,
+                destination: targetProject,
               })
             }
 

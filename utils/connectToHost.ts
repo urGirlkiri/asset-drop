@@ -2,24 +2,31 @@ export default function connectToHost() {
   let nativePort: any = browser.runtime.connectNative('io.assetdrop.host')
 
   nativePort.onMessage.addListener((msg: any) => {
-    console.log(msg)
     if (msg.status === 'connected') {
-      browser.runtime.sendMessage({ type: "PING", success: true }).catch(() => {})
-    } else {
-      browser.runtime.sendMessage({ type: "PING", success: false }).catch(() => {})
+      browser.runtime.sendMessage({ type: "PING", success: true }).catch(() => { })
+    }
+
+    if (msg.status === 'PROCESS_DOWNLOAD') {
+      browser.runtime.sendMessage({ ...msg, type: 'DOWNLOAD_PROCESSED' }).catch(() => { })
+    }
+
+    if (msg.status === 'error') {
+      console.error("Native Host Reported Error:", msg.message)
+      browser.runtime.sendMessage({ 
+        type: 'DOWNLOAD_INTERRUPTED', 
+        error: "Host Error: " + msg.message 
+      }).catch(() => { })
     }
   })
 
   nativePort.onDisconnect.addListener(() => {
     if (browser.runtime.lastError) {
-      console.error("Native Host Error:", browser.runtime.lastError.message);
-      
+      console.error("Native Host Error:", browser.runtime.lastError.message)
       browser.runtime.sendMessage({
         type: "PING",
         success: false,
         message: browser.runtime.lastError.message
-      }).catch(() => {})
-      
+      }).catch(() => { })
     } else {
       console.log("🔌 Native Host disconnected cleanly.")
     }
@@ -34,4 +41,4 @@ export default function connectToHost() {
   nativePort.postMessage({ type: 'PING' })
 
   return nativePort
-}
+};

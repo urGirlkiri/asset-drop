@@ -3,6 +3,7 @@ import toast from "react-hot-toast"
 
 const Dropzone = ({ isPanel = false }) => {
     const { projects, setActiveProject, activeProject } = useProjectStore()
+    const { moveAsset, unzipAsset } = useSettingsStore()
     const [droppedLink, setDroppedLink] = useState<string | null>(null)
 
     const [assetName, setAssetName] = useState<string | null>(null)
@@ -12,6 +13,7 @@ const Dropzone = ({ isPanel = false }) => {
     const [hasDownloaded, setHasDownloaded] = useState(false)
 
     const [scraping, setScraping] = useState(true)
+    const [processing, setProcessing] = useState(moveAsset || unzipAsset)
     const [progress, setProgress] = useState(0)
 
     useEffect(() => {
@@ -30,24 +32,27 @@ const Dropzone = ({ isPanel = false }) => {
 
             if (message.type === 'DOWNLOAD_COMPLETE') {
                 setProgress(100)
-                setTimeout(() => setHasDownloaded(true), 1000)
+                setHasDownloaded(true)
+                if (!moveAsset && !unzipAsset) {
+                    setProcessing(false)
+                }
+            }
+
+            if (message.type == 'DOWNLOAD_PROCESSED') {
+                setProcessing(false)
+                toast.success(message.message || "Processed successfully!")
             }
 
             if (message.type === 'DOWNLOAD_INTERRUPTED') {
-                toast.error("Download Failed: " + (message.error || "Interrupted"))
-
-                setDroppedLink(null)
-                setAssetName(null)
-                setAssetSize(null)
-                setProgress(0)
-                setHasDownloaded(false)
+                toast.error("Error: " + (message.error || "Interrupted"))
+                handleReset()
             }
         }
 
         browser.runtime.onMessage.addListener(handleRuntimeMessage)
 
         return () => browser.runtime.onMessage.removeListener(handleRuntimeMessage)
-    }, [])
+    }, [moveAsset, unzipAsset])
 
 
     const copyToClipboard = () => {
@@ -85,12 +90,16 @@ const Dropzone = ({ isPanel = false }) => {
         }
 
         setDroppedLink(link)
+        setScraping(true)
+        setHasDownloaded(false)
+        setProcessing(moveAsset || unzipAsset)
+        setProgress(0)
+
         browser.runtime.sendMessage({
             type: 'PROCESS_ASSET',
             url: link,
             targetProject: activeProject?.filePath
         })
-
     }
 
     const handleReset = () => {
@@ -99,11 +108,11 @@ const Dropzone = ({ isPanel = false }) => {
         setAssetSize(null)
         setProgress(0)
         setHasDownloaded(false)
+        setProcessing(moveAsset || unzipAsset)
     }
 
     return (
         <div className="flex flex-col flex-1 gap-4">
-
             {
                 isPanel && !droppedLink &&
                 <div className="flex justify-between items-center gap-4">
@@ -127,7 +136,7 @@ const Dropzone = ({ isPanel = false }) => {
             }
 
             {
-                hasDownloaded ?
+                hasDownloaded && !processing ?
                     <div className="flex flex-col flex-1 gap-6 animate-in duration-300 fade-in">
                         <div className="flex flex-1 justify-center items-center grid-pattern grid-sm bg-gray-50/50 border border-gray-100 rounded-xl w-full">
                             <div className="relative">
@@ -166,12 +175,14 @@ const Dropzone = ({ isPanel = false }) => {
                                 <CircleProgress progress={progress} />
                                 {
                                     <p className="text-primary-dark animate-pulse">
-                                        {scraping ? 'Finding Asset...' : 'Downloading...'}
+                                        {
+                                            scraping ? 'Finding Asset...' :
+                                            !hasDownloaded ? 'Downloading...' :
+                                            'Processing...'
+                                        }
                                     </p>
                                 }
                             </div>
-
-
 
                             <div className="flex justify-between">
                                 <div className="flex flex-col gap-2">
@@ -182,8 +193,6 @@ const Dropzone = ({ isPanel = false }) => {
                                     <p className="text-gray-400 uppercase">Size</p>
                                     <p>{assetSize}</p>
                                 </div>
-
-
                             </div>
 
                             <div className="bg-gray bg-gray-200 w-full h-[.1rem]"></div>
@@ -212,20 +221,17 @@ const Dropzone = ({ isPanel = false }) => {
                                 isDragging ? "text-accent-light" : (!isPanel ? "text-red-300" : "text-gray-400")
                             )}
                         >
-
                             {isDragging ? (
                                 <Plus size={30} className="mt- animate-bounce" />
                             ) : (
                                 <Download size={100} />
                             )}
-
                             {
                                 !isDragging &&
                                 <p >Drag and Drop Links Here</p>
                             }
                         </div>
             }
-
         </div>
     )
 }
