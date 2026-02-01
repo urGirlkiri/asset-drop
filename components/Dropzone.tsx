@@ -1,4 +1,4 @@
-import { Download, Plus, Link as LinkIcon, CheckCircle, Copy, Folder } from "lucide-react"
+import { Download, Plus, CheckCircle, Copy, Folder } from "lucide-react"
 import toast from "react-hot-toast"
 
 const Dropzone = ({ isPanel = false }) => {
@@ -10,10 +10,17 @@ const Dropzone = ({ isPanel = false }) => {
 
     const [isDragging, setIsDragging] = useState(false)
     const [hasDownloaded, setHasDownloaded] = useState(false)
+
+    const [scraping, setScraping] = useState(true)
     const [progress, setProgress] = useState(0)
 
     useEffect(() => {
         const handleRuntimeMessage = (message: any) => {
+
+            if (message.type === 'DOWNLOAD_STARTED') {
+                setScraping(false)
+            }
+
             if (message.type === 'DOWNLOAD_PROGRESS') {
                 setProgress(message.progress)
                 setAssetName(message.filename)
@@ -155,9 +162,16 @@ const Dropzone = ({ isPanel = false }) => {
                     </div>
                     : droppedLink ?
                         <div className="flex flex-col flex-1 gap-8">
-                            <div className="flex flex-1 justify-center items-center grid-pattern grid-sm bg-gray-50/50 border border-gray-100 rounded-xl w-full">
+                            <div className="flex flex-col flex-1 justify-center items-center gap-6 grid-pattern grid-sm bg-gray-50/50 border border-gray-100 rounded-xl w-full">
                                 <CircleProgress progress={progress} />
+                                {
+                                    <p className="text-primary-dark animate-pulse">
+                                        {scraping ? 'Finding Asset...' : 'Downloading...'}
+                                    </p>
+                                }
                             </div>
+
+
 
                             <div className="flex justify-between">
                                 <div className="flex flex-col gap-2">

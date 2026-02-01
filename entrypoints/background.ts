@@ -16,11 +16,16 @@ export default defineBackground(() => {
 
       scrapeItchIo(message.url)
         .then((result) => {
+          browser.runtime.sendMessage({
+            type: 'DOWNLOAD_STARTED',
+            url: message.url,
+            targetProject: message.targetProject
+          }).catch(() => { })
 
           browser.downloads.download({
             url: result.url,
             conflictAction: 'uniquify',
-            filename: `AssetDrop/${result.filename}`, 
+            filename: `AssetDrop/${result.filename}`,
             saveAs: false
           }, (downloadId) => {
             if (browser.runtime.lastError) {
