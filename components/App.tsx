@@ -1,4 +1,4 @@
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast"
 
 const tabs = [
   {
@@ -17,10 +17,29 @@ const tabs = [
     name: 'Settings',
     component: () => <p className="text-secondary-dark">Settings</p>
   }
-];
+]
 
 function App({ isPanel = false }) {
-  const [currentTab, setCurrentTab] = useState(tabs[0]);
+  const [currentTab, setCurrentTab] = useState(tabs[0])
+
+  useEffect(() => {
+    let loading = toast.loading("Connecting to bridge...")
+    browser.runtime.onMessage.addListener((message) => {
+      if (message.type === 'PING') {
+        if(message.success === true){
+          toast.dismiss(loading)
+          toast.success("Connected to bridge!")
+        } else {
+          toast.dismiss(loading)
+          toast.error("Failed to connect to bridge!")
+          toast.error(message.error)
+        }
+      }
+    })
+
+    browser.runtime.sendMessage({ type: 'PING' })
+
+  }, [])
 
   const CurrentTabComp = tabs.find((tab) => tab.name === currentTab.name)!.component
 
@@ -28,7 +47,7 @@ function App({ isPanel = false }) {
   return (
     <main className='flex flex-col gap-2 bg-primary-light min-w-[400px] h-screen min-h-[500px]'>
       <Header />
-      <Toaster position="top-right"  />
+      <Toaster position="top-right" />
       {(!isPanel && currentTab.name === 'Dropzone') && <SidePanelBtn />}
 
       <div className='flex flex-col flex-1 p-4'>
@@ -56,7 +75,10 @@ function App({ isPanel = false }) {
         </div>
       </div>
     </main>
-  );
+  )
+
+
 }
 
-export default App;
+export default App
+
