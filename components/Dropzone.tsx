@@ -1,17 +1,18 @@
 import { Download, Plus, CheckCircle, Copy, Folder } from "lucide-react"
 import toast from "react-hot-toast"
+import { v4 as uuidv4 } from 'uuid' 
 
 const Dropzone = ({ isPanel = false }) => {
     const { projects, setActiveProject, activeProject } = useProjectStore()
     const { moveAsset, unzipAsset } = useSettingsStore()
-    const [droppedLink, setDroppedLink] = useState<string | null>(null)
+    const { addItem } = useHistoryStore() 
 
+    const [droppedLink, setDroppedLink] = useState<string | null>(null)
     const [assetName, setAssetName] = useState<string | null>(null)
     const [assetSize, setAssetSize] = useState<string | null>(null)
 
     const [isDragging, setIsDragging] = useState(false)
     const [hasDownloaded, setHasDownloaded] = useState(false)
-
     const [scraping, setScraping] = useState(true)
     const [processing, setProcessing] = useState(moveAsset || unzipAsset)
     const [progress, setProgress] = useState(0)
@@ -33,6 +34,20 @@ const Dropzone = ({ isPanel = false }) => {
             if (message.type === 'DOWNLOAD_COMPLETE') {
                 setProgress(100)
                 setHasDownloaded(true)
+                
+                if (assetName) {
+                    addItem({
+                        id: uuidv4(),
+                        filename: assetName,
+                        url: droppedLink || 'Unknown Source',
+                        projectName: activeProject?.name || 'Unknown Project',
+                        destinationPath: activeProject?.filePath || '',
+                        date: new Date().toISOString(),
+                        size: assetSize || 'Unknown',
+                        status: 'success'
+                    })
+                }
+
                 if (!moveAsset && !unzipAsset) {
                     setProcessing(false)
                 }
@@ -45,6 +60,19 @@ const Dropzone = ({ isPanel = false }) => {
 
             if (message.type === 'DOWNLOAD_INTERRUPTED') {
                 toast.error("Error: " + (message.error || "Interrupted"))
+                
+                addItem({
+                    id: uuidv4(),
+                    filename: assetName || 'Unknown File',
+                    url: droppedLink || 'Unknown Source',
+                    projectName: activeProject?.name || 'Unknown Project',
+                    destinationPath: activeProject?.filePath || '',
+                    date: new Date().toISOString(),
+                    size: '-',
+                    status: 'failed',
+                    error: message.error
+                })
+
                 handleReset()
             }
         }
@@ -52,8 +80,7 @@ const Dropzone = ({ isPanel = false }) => {
         browser.runtime.onMessage.addListener(handleRuntimeMessage)
 
         return () => browser.runtime.onMessage.removeListener(handleRuntimeMessage)
-    }, [moveAsset, unzipAsset])
-
+    }, [activeProject, droppedLink, assetName, assetSize, moveAsset, unzipAsset]) 
 
     const copyToClipboard = () => {
         if (droppedLink) {
@@ -123,9 +150,10 @@ const Dropzone = ({ isPanel = false }) => {
 
                     <select
                         onChange={(e) => setActiveProject(e.target.value)}
-                        value={activeProject?.id}
+                        value={activeProject?.id || ''}
                         className="self-center p-3 border-2 border-gray-300 hover:border-gray-500 rounded-lg w-48"
                     >
+                         <option value="" disabled>Select Project</option>
                         {
                             projects.map((project, index) => (
                                 <option key={index} value={project.id} className="font-bold">{project.name}</option>
@@ -187,15 +215,15 @@ const Dropzone = ({ isPanel = false }) => {
                             <div className="flex justify-between">
                                 <div className="flex flex-col gap-2">
                                     <p className="text-gray-400 uppercase">Asset</p>
-                                    <p>{assetName}</p>
+                                    <p className="max-w-[150px] truncate">{assetName || '-'}</p>
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <p className="text-gray-400 uppercase">Size</p>
-                                    <p>{assetSize}</p>
+                                    <p>{assetSize || '-'}</p>
                                 </div>
                             </div>
 
-                            <div className="bg-gray bg-gray-200 w-full h-[.1rem]"></div>
+                            <div className="bg-gray-200 w-full h-[.1rem]"></div>
 
                             <button
                                 onClick={handleReset}
@@ -209,7 +237,7 @@ const Dropzone = ({ isPanel = false }) => {
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
                             className={cn(
-                                "flex flex-col flex-1 justify-center items-center gap-4 transition-all duration-300 ease-in-out",
+                                "flex flex-col flex-1 justify-center items-center gap-4 transition-all duration-300 ease-in-out cursor-pointer",
                                 "border-2 rounded-lg p-4",
                                 isDragging && "grid-pattern grid-sm",
                                 isDragging
@@ -224,7 +252,7 @@ const Dropzone = ({ isPanel = false }) => {
                             {isDragging ? (
                                 <Plus size={30} className="mt- animate-bounce" />
                             ) : (
-                                <Download size={100} />
+                                <Download size={80} strokeWidth={1.5} />
                             )}
                             {
                                 !isDragging &&

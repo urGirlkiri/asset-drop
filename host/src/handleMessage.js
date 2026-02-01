@@ -33,7 +33,13 @@ const handleMessage = async (msg) => {
 
             if (unzipAsset && filename.toLowerCase().endsWith('.zip')) {
                 const zip = new AdmZip(finalPath)
-                zip.extractAllTo(destination, true) 
+                
+                const folderName = path.parse(filename).name
+                
+                const extractPath = path.join(destination, folderName)
+
+                zip.extractAllTo(extractPath, true) 
+                
                 finalStatus = "Moved and Unzipped successfully"
             }
 
