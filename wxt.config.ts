@@ -9,7 +9,7 @@ export default defineConfig({
 
   manifest: (env) => ({
     name: 'Asset Drop',
-    description: 'Download assets from any asset store into your game engine.',
+    description: 'Download game assets directly into your project folder.',
     permissions: [
       ...(env.browser === 'firefox' ? [] : ['sidePanel']),
       'nativeMessaging', 'downloads', "storage"

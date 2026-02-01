@@ -1,6 +1,6 @@
 # Asset Drop
 
-Download assets from any asset store into your game engine.
+Download game assets directly into your project folder.
 
 ## Disclaimer
 
