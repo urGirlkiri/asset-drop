@@ -2,7 +2,7 @@ import { Download, Plus, CheckCircle, Copy, Folder } from "lucide-react"
 import toast from "react-hot-toast"
 
 const Dropzone = ({ isPanel = false }) => {
-    const { projects, activeProjectId, setActiveProject } = useProjectStore()
+    const { projects, setActiveProject, activeProject } = useProjectStore()
     const [droppedLink, setDroppedLink] = useState<string | null>(null)
 
     const [assetName, setAssetName] = useState<string | null>(null)
@@ -85,10 +85,10 @@ const Dropzone = ({ isPanel = false }) => {
         }
 
         setDroppedLink(link)
-
         browser.runtime.sendMessage({
             type: 'PROCESS_ASSET',
             url: link,
+            targetProject: activeProject?.filePath
         })
 
     }
@@ -114,7 +114,7 @@ const Dropzone = ({ isPanel = false }) => {
 
                     <select
                         onChange={(e) => setActiveProject(e.target.value)}
-                        value={activeProjectId ?? undefined}
+                        value={activeProject?.id}
                         className="self-center p-3 border-2 border-gray-300 hover:border-gray-500 rounded-lg w-48"
                     >
                         {

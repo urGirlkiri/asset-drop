@@ -5,6 +5,21 @@ export default defineBackground(() => {
     .setPanelBehavior({ openPanelOnActionClick: true })
     .catch((error) => console.error(error))
 
+  browser.runtime.onInstalled.addListener(async (details) => {
+    if (details.reason === 'install') {
+      const defaultZustandState = {
+        state: {
+          ...defaultSettings
+        },
+        version: 0
+      }
+
+      await browser.storage.local.set({
+        'asset-drop-settings': JSON.stringify(defaultZustandState)
+      })
+    }
+  })
+
   const storageMap = new Map<number, object>()
   const activeDownloads = new Set<number>()
   let progressInterval: ReturnType<typeof setInterval> | null = null
@@ -39,7 +54,7 @@ export default defineBackground(() => {
           })
         })
         .catch((err) => {
-          console.error("❌ Automation Failed:", err)
+          console.error("Automation Failed:", err)
           browser.runtime.sendMessage({
             type: 'DOWNLOAD_INTERRUPTED',
             error: "Could not auto-download: " + err.message
@@ -93,23 +108,46 @@ export default defineBackground(() => {
 
   browser.downloads.onChanged.addListener((delta) => {
     const downloadId = delta.id
+    const targetProject = storageMap.get(downloadId)
 
-    if (!storageMap.has(downloadId)) return
+    if (!storageMap.has(downloadId) || !targetProject) return
 
     if (delta.state) {
       const currentState = delta.state.current
 
       if (currentState === 'complete') {
-        browser.downloads.search({ id: downloadId }, (results) => {
+        browser.downloads.search({ id: downloadId }, async (results) => {
           if (results && results[0]) {
             const fullDownloadPath = results[0].filename
-            console.log(fullDownloadPath)
+
+            const storageData = await browser.storage.local.get('asset-drop-settings')
+            let moveAsset = false
+            let unzipAsset = false
+
+            if (storageData['asset-drop-settings']) {
+              const parsed = JSON.parse(storageData['asset-drop-settings'])
+              if (parsed.state) {
+                moveAsset = parsed.state.moveAsset
+                unzipAsset = parsed.state.unzipAsset
+              }
+            }
 
             browser.runtime.sendMessage({
               type: 'DOWNLOAD_COMPLETE',
               id: downloadId,
               filename: fullDownloadPath.split(/[/\\]/).pop()
             })
+
+            if (nativePort && (moveAsset || unzipAsset)) {
+              nativePort.postMessage({
+                type: 'PROCESS_DOWNLOAD',
+                source: fullDownloadPath,
+                moveAsset,
+                unzipAsset,
+                // @ts-ignore
+                destination: targetProject.filePath,
+              })
+            }
 
             activeDownloads.delete(downloadId)
             storageMap.delete(downloadId)
