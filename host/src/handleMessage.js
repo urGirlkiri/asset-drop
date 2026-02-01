@@ -1,8 +1,13 @@
 import fs from 'fs'
 import path from 'path'
-import { exec } from 'child_process' 
+import { exec } from 'child_process'
 import AdmZip from 'adm-zip'
 import sendMessage from "./sendMessage.js"
+
+const runPowerShell = (cmd, callback) => {
+    const psCommand = `powershell -ExecutionPolicy Bypass -NoProfile -Command "${cmd}"`;
+    exec(psCommand, callback);
+}
 
 const handleMessage = async (msg) => {
     try {
@@ -10,15 +15,7 @@ const handleMessage = async (msg) => {
             sendMessage({ status: 'connected' })
         }
         else if (msg.type === 'PICK_FOLDER') {
-            exec('zenity --file-selection --directory', (error, stdout, stderr) => {
-                if (error) {
-                    //  likely cancelled or zenity missing
-                    sendMessage({ status: 'FOLDER_PICK_CANCELED' })
-                    return
-                }
-
-                let selectedPath = stdout.trim()
-                
+            const processFolder = (selectedPath) => {
                 const commonAssets = ['Assets', 'assets', 'content', 'Content']
                 let suggestion = selectedPath
                 
@@ -34,7 +31,33 @@ const handleMessage = async (msg) => {
                     status: 'FOLDER_PICKED', 
                     path: suggestion 
                 })
-            })
+            }
+
+            if (process.platform === 'win32') {
+                const psScript = `
+                    Add-Type -AssemblyName System.Windows.Forms;
+                    $f = New-Object System.Windows.Forms.FolderBrowserDialog;
+                    $f.ShowNewFolderButton = $true;
+                    $f.Description = 'Select Project Folder';
+                    if ($f.ShowDialog() -eq 'OK') { Write-Host $f.SelectedPath }
+                `;
+                
+                runPowerShell(psScript, (err, stdout, stderr) => {
+                    if (err || !stdout.trim()) {
+                        sendMessage({ status: 'FOLDER_PICK_CANCELED' })
+                        return
+                    }
+                    processFolder(stdout.trim())
+                })
+            } else {
+                exec('zenity --file-selection --directory', (error, stdout, stderr) => {
+                    if (error || !stdout.trim()) {
+                        sendMessage({ status: 'FOLDER_PICK_CANCELED' })
+                        return
+                    }
+                    processFolder(stdout.trim())
+                })
+            }
         }
         else if (msg.type === 'PROCESS_DOWNLOAD') {
             const { source, destination, moveAsset, unzipAsset, deleteAfterUnzip } = msg

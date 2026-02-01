@@ -27,6 +27,10 @@ npm i
 
 ## Setup Native Bridge
 
+The Native Bridge is required for the extension to save files to your disk and open folder dialogs.
+
+## 🐧 Linux
+
 ### 1. Change Dir to Host
 
 ```bash
@@ -38,6 +42,21 @@ cd host
 ```bash
 chmod +x install.sh && ./install.sh
 ```
+
+## 🪟 Windows
+
+### 1. Change Dir to Host
+
+```bash
+cd host
+```
+
+### 2. Install Bridge
+
+```bash
+.\install_host.bat
+```
+_(Or simply double-click install_host.bat in File Explorer)_
 
 ## How to Install Extension
 
@@ -79,14 +98,25 @@ npm run zip
 
 ## How to Debug
 
-### View Logs
+
+### 🐧 Linux
+
+#### View Logs
 
 ```bash
 tail -f /tmp/assetdrop_debug.log
 ```
 
-### Clear Logs 
+#### Clear Logs 
 
 ```bash
 rm /tmp/assetdrop_debug.log
+```
+
+### 🪟 Windows
+
+#### View Logs
+
+```bash
+Get-Content $env:TEMP\assetdrop_debug.log -Wait
 ```

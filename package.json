@@ -2,7 +2,7 @@
   "name": "asset-drop",
   "description": "Download game assets directly into your project folder.",
   "private": true,
-  "version": "0.1.3",
+  "version": "0.1.4",
   "type": "module",
   "scripts": {
     "dev": "wxt -b firefox",
