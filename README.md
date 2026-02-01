@@ -2,6 +2,10 @@
 
 Download assets from any asset store into your game engine.
 
+## Disclaimer
+
+This program is for educational purposes only and only works for free assets
+
 ## How to Install
 
 ### Clone Repo
