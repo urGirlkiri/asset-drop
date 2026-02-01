@@ -4,7 +4,7 @@ export default defineConfig({
   modules: ['@wxt-dev/module-react', '@wxt-dev/auto-icons'],
 
   imports: {
-    dirs: ['stores']
+    dirs: ['stores', 'scrapers']
   },
 
   manifest: (env) => ({
@@ -13,6 +13,10 @@ export default defineConfig({
     permissions: [
       ...(env.browser === 'firefox' ? [] : ['sidePanel']),
       'nativeMessaging', 'downloads'
+    ],
+    host_permissions: [
+      "*://*.itch.io/*",
+      "*://itch.io/*"
     ],
 
     action: {

@@ -1,3 +1,5 @@
+import scrapeItchIo from "@/scrapers/scrapeItchIo"
+
 export default defineBackground(() => {
   browser.sidePanel && browser.sidePanel
     .setPanelBehavior({ openPanelOnActionClick: true })
@@ -8,28 +10,39 @@ export default defineBackground(() => {
   let progressInterval: ReturnType<typeof setInterval> | null = null
   const nativePort = connectToHost()
 
-  
+
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'PROCESS_ASSET') {
-      browser.downloads.download({
-        url: message.url,
-        conflictAction: 'uniquify',
-        filename: `AssetDrop/${message.filename ?? 'asset'}`,
-        saveAs: false
-      }, (downloadId) => {
-        if (browser.runtime.lastError) {
-          console.error("Download failed:", browser.runtime.lastError)
-          return
-        }
-        
-        storageMap.set(downloadId, message.targetProject)
-        
-        activeDownloads.add(downloadId)
-        startPolling()
-      })
+
+      scrapeItchIo(message.url)
+        .then((result) => {
+
+          browser.downloads.download({
+            url: result.url,
+            conflictAction: 'uniquify',
+            filename: `AssetDrop/${result.filename}`, 
+            saveAs: false
+          }, (downloadId) => {
+            if (browser.runtime.lastError) {
+              console.error("Download failed:", browser.runtime.lastError)
+              return
+            }
+
+            storageMap.set(downloadId, message.targetProject)
+            activeDownloads.add(downloadId)
+            startPolling()
+          })
+        })
+        .catch((err) => {
+          console.error("❌ Automation Failed:", err)
+          browser.runtime.sendMessage({
+            type: 'DOWNLOAD_INTERRUPTED',
+            error: "Could not auto-download: " + err.message
+          }).catch(() => { })
+        })
     }
   })
-  
+
   const startPolling = () => {
     if (progressInterval) return
 
@@ -55,7 +68,7 @@ export default defineBackground(() => {
           if (item.state === 'in_progress') {
             const total = item.totalBytes
             const loaded = item.bytesReceived
-            
+
             const percent = total > 0 ? Math.round((loaded / total) * 100) : 0
 
             browser.runtime.sendMessage({
@@ -70,9 +83,9 @@ export default defineBackground(() => {
           }
         })
       })
-    }, 200) 
+    }, 200)
   }
-  
+
   browser.downloads.onChanged.addListener((delta) => {
     const downloadId = delta.id
 
@@ -97,13 +110,13 @@ export default defineBackground(() => {
             storageMap.delete(downloadId)
           }
         })
-      } 
-     else if (currentState === 'interrupted') {
+      }
+      else if (currentState === 'interrupted') {
         browser.runtime.sendMessage({
           type: 'DOWNLOAD_INTERRUPTED',
           id: downloadId,
           error: "Network error or User cancelled"
-        }).catch(() => {})
+        }).catch(() => { })
 
         activeDownloads.delete(downloadId)
         storageMap.delete(downloadId)
