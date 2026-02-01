@@ -2,23 +2,62 @@
 
 Download assets from any asset store into your game engine.
 
+## How to Install
 
-## How to Setup Native Bridge
+### Clone Repo
 
-### 1. Make the host scripts executable
-chmod +x host/run_host.sh
-chmod +x host/app.cjs
+git clone https://github.com/urGirlkiri/asset-drop.git
 
-### 2. Create the Firefox Native Hosts folder (if missing)
-mkdir -p ~/.mozilla/native-messaging-hosts/
+### Change Dir
 
-### 3. Register the manifest
-cp host/io.assetdrop.host.json ~/.mozilla/native-messaging-hosts/
+cd asset-drop
 
-## How to Use
 
-### Zip Extension
+### Instal Deps
+
+npm i
+
+
+## Setup Native Bridge
+
+### 1. Change Dir to Host
+
+cd host
+
+### 2. Install Bridge
+
+chmod +x install.sh && ./install.sh
+
+## How to Install Extension
+
+### Install From Addon Store
+
+https://addons.mozilla.org/en-US/firefox/addon/asset-drop/
+
+
+![alt text](assets/readme/add.png)
+
+### Install From Source
+
+#### Zip Extension
 
 npm run zip
 
-### Load Temporary Extension
+#### Open Firefox
+
+about:debugging#/runtime/this-firefox
+
+
+#### Load Temporary Extension
+
+![alt text](assets/readme/load.png)
+
+
+#### Select the Zip File
+
+![alt text](assets/readme/select.png)
+
+#### Done
+
+
+![alt text](assets/readme/done.png)

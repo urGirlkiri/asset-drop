@@ -1,9 +1,0 @@
-{
-  "name": "io.assetdrop.host",
-  "description": "Asset Drop Native Host",
-  "path": "/home/kiri/Desktop/asset-drop/host/run_host.sh",
-  "type": "stdio",
-  "allowed_extensions": [
-    "asset-drop@assetdrop.io"
-  ]
-}
