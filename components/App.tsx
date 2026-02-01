@@ -6,7 +6,7 @@ const tabs = [
   },
   {
     name: 'Projects',
-    component: () => <p className="text-secondary-dark">Projects</p>
+    component: Projects
   },
   {
     name: 'History',

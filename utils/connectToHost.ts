@@ -10,6 +10,13 @@ export default function connectToHost() {
       browser.runtime.sendMessage({ ...msg, type: 'DOWNLOAD_PROCESSED' }).catch(() => { })
     }
 
+    if (msg.status === 'FOLDER_PICKED') {
+        browser.runtime.sendMessage({ 
+            type: 'FOLDER_PICKED_RESULT', 
+            path: msg.path 
+        }).catch(() => {})
+    }
+
     if (msg.status === 'error') {
       console.error("Native Host Reported Error:", msg.message)
       browser.runtime.sendMessage({ 
@@ -35,6 +42,12 @@ export default function connectToHost() {
   browser.runtime.onMessage.addListener((msg: any) => {
     if (msg.type === 'PING') {
       nativePort.postMessage({ type: 'PING' })
+    }
+
+    if (msg.type === 'TRIGGER_FOLDER_PICKER') {
+        try {
+            nativePort.postMessage({ type: 'PICK_FOLDER' })
+        } catch(e) { console.error(e) }
     }
   })
 
