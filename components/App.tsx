@@ -1,5 +1,4 @@
 import toast, { Toaster } from "react-hot-toast"
-
 const tabs = [
   {
     name: 'Dropzone',
@@ -15,7 +14,7 @@ const tabs = [
   },
   {
     name: 'Settings',
-    component: () => <p className="text-secondary-dark">Settings</p>
+    component: Settings
   }
 ]
 
@@ -55,7 +54,7 @@ useEffect(() => {
 
 
   return (
-    <main className='flex flex-col gap-2 bg-primary-light w-full min-w-[400px] h-screen min-h-[500px]'>
+    <main className='flex flex-col gap-2 bg-primary-light min-w-[400px] h-screen min-h-[500px]'>
       <Header />
       <Toaster position="top-right" />
       {(!isPanel && currentTab.name === 'Dropzone') && <SidePanelBtn />}

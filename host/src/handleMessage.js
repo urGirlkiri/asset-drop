@@ -9,7 +9,7 @@ const handleMessage = async (msg) => {
             sendMessage({ status: 'connected' })
         }
         else if (msg.type === 'PROCESS_DOWNLOAD') {
-            const { source, destination, moveAsset, unzipAsset } = msg
+            const { source, destination, moveAsset, unzipAsset, deleteAfterUnzip } = msg
 
             if (!fs.existsSync(source)) {
                 throw new Error(`Source file not found: ${source}`)
@@ -35,12 +35,21 @@ const handleMessage = async (msg) => {
                 const zip = new AdmZip(finalPath)
                 
                 const folderName = path.parse(filename).name
-                
                 const extractPath = path.join(destination, folderName)
 
                 zip.extractAllTo(extractPath, true) 
                 
                 finalStatus = "Moved and Unzipped successfully"
+
+                if (deleteAfterUnzip) {
+                    try {
+                        fs.unlinkSync(finalPath) 
+                        finalStatus = "Unzipped & Cleaned up"
+                    } catch (e) {
+                        console.error("Failed to delete zip:", e)
+                        finalStatus = "Unzipped (Cleanup failed)"
+                    }
+                }
             }
 
             sendMessage({ 

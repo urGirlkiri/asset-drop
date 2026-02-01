@@ -121,14 +121,16 @@ export default defineBackground(() => {
             const fullDownloadPath = results[0].filename
 
             const storageData = await browser.storage.local.get('asset-drop-settings')
-            let moveAsset = false
-            let unzipAsset = false
+            let moveAsset = defaultSettings.moveAsset
+            let unzipAsset = defaultSettings.unzipAsset
+            let deleteAfterUnzip = defaultSettings.deleteAfterUnzip 
 
             if (storageData['asset-drop-settings']) {
               const parsed = JSON.parse(storageData['asset-drop-settings'])
               if (parsed.state) {
                 moveAsset = parsed.state.moveAsset
                 unzipAsset = parsed.state.unzipAsset
+                deleteAfterUnzip = parsed.state.deleteAfterUnzip
               }
             }
 
@@ -144,6 +146,7 @@ export default defineBackground(() => {
                 source: fullDownloadPath,
                 moveAsset,
                 unzipAsset,
+                deleteAfterUnzip,
                 // @ts-ignore
                 destination: targetProject,
               })
