@@ -6,27 +6,34 @@ Download assets from any asset store into your game engine.
 
 ### Clone Repo
 
+```bash
 git clone https://github.com/urGirlkiri/asset-drop.git
-
+```
 ### Change Dir
 
+```bash
 cd asset-drop
-
+```
 
 ### Instal Deps
 
+```bash
 npm i
-
+```
 
 ## Setup Native Bridge
 
 ### 1. Change Dir to Host
 
+```bash
 cd host
+```
 
 ### 2. Install Bridge
 
+```bash
 chmod +x install.sh && ./install.sh
+```
 
 ## How to Install Extension
 
@@ -41,12 +48,15 @@ https://addons.mozilla.org/en-US/firefox/addon/asset-drop/
 
 #### Zip Extension
 
+
+```bash
 npm run zip
+```
 
 #### Open Firefox
 
-about:debugging#/runtime/this-firefox
-
+[about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox
+)
 
 #### Load Temporary Extension
 
