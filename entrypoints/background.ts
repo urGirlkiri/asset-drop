@@ -8,6 +8,28 @@ export default defineBackground(() => {
   let progressInterval: ReturnType<typeof setInterval> | null = null
   const nativePort = connectToHost()
 
+  
+  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'PROCESS_ASSET') {
+      browser.downloads.download({
+        url: message.url,
+        conflictAction: 'uniquify',
+        filename: `AssetDrop/${message.filename ?? 'asset'}`,
+        saveAs: false
+      }, (downloadId) => {
+        if (browser.runtime.lastError) {
+          console.error("Download failed:", browser.runtime.lastError)
+          return
+        }
+        
+        storageMap.set(downloadId, message.targetProject)
+        
+        activeDownloads.add(downloadId)
+        startPolling()
+      })
+    }
+  })
+  
   const startPolling = () => {
     if (progressInterval) return
 
@@ -50,28 +72,7 @@ export default defineBackground(() => {
       })
     }, 200) 
   }
-
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'PROCESS_ASSET') {
-      browser.downloads.download({
-        url: message.url,
-        conflictAction: 'uniquify',
-        filename: `AssetDrop/${message.filename ?? 'asset'}`,
-        saveAs: false
-      }, (downloadId) => {
-        if (browser.runtime.lastError) {
-          console.error("Download failed:", browser.runtime.lastError)
-          return
-        }
-
-        storageMap.set(downloadId, message.targetProject)
-        
-        activeDownloads.add(downloadId)
-        startPolling()
-      })
-    }
-  })
-
+  
   browser.downloads.onChanged.addListener((delta) => {
     const downloadId = delta.id
 

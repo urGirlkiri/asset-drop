@@ -1,24 +1,8 @@
 import { Download, Plus, Link as LinkIcon, CheckCircle, Copy, Folder } from "lucide-react"
 import toast from "react-hot-toast"
 
-
-const projects = [
-    {
-        name: 'Project 1',
-        filePath: '/home/Downloads'
-    },
-    {
-        name: 'Project 2',
-        filePath: '/home/Downloads'
-    },
-    {
-        name: 'Project 3',
-        filePath: '/home/Downloads'
-    }
-]
-
 const Dropzone = ({ isPanel = false }) => {
-    const [selectedProject, setSelectedProject] = useState(projects[0])
+    const { projects, activeProjectId, setActiveProject } = useProjectStore()
     const [droppedLink, setDroppedLink] = useState<string | null>(null)
 
     const [assetName, setAssetName] = useState<string | null>(null)
@@ -28,7 +12,7 @@ const Dropzone = ({ isPanel = false }) => {
     const [hasDownloaded, setHasDownloaded] = useState(false)
     const [progress, setProgress] = useState(0)
 
-useEffect(() => {
+    useEffect(() => {
         const handleRuntimeMessage = (message: any) => {
             if (message.type === 'DOWNLOAD_PROGRESS') {
                 setProgress(message.progress)
@@ -44,7 +28,7 @@ useEffect(() => {
 
             if (message.type === 'DOWNLOAD_INTERRUPTED') {
                 toast.error("Download Failed: " + (message.error || "Interrupted"))
-                
+
                 setDroppedLink(null)
                 setAssetName(null)
                 setAssetSize(null)
@@ -98,7 +82,6 @@ useEffect(() => {
         browser.runtime.sendMessage({
             type: 'PROCESS_ASSET',
             url: link,
-            targetProject: selectedProject
         })
 
     }
@@ -123,13 +106,13 @@ useEffect(() => {
                     </div>
 
                     <select
-                        onChange={(e) => setSelectedProject(projects.find((project) => project.name === e.target.value)!)}
-                        value={selectedProject.name}
+                        onChange={(e) => setActiveProject(e.target.value)}
+                        value={activeProjectId ?? undefined}
                         className="self-center p-3 border-2 border-gray-300 hover:border-gray-500 rounded-lg w-48"
                     >
                         {
                             projects.map((project, index) => (
-                                <option key={index} value={project.name} className="font-bold">{project.name}</option>
+                                <option key={index} value={project.id} className="font-bold">{project.name}</option>
                             ))
                         }
                     </select>
