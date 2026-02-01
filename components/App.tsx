@@ -22,23 +22,33 @@ const tabs = [
 function App({ isPanel = false }) {
   const [currentTab, setCurrentTab] = useState(tabs[0])
 
-  useEffect(() => {
-    let loading = toast.loading("Connecting to bridge...")
-    browser.runtime.onMessage.addListener((message) => {
+useEffect(() => {
+    const loadingId = toast.loading("Connecting to bridge...")
+
+    const handleMessage = (message: any) => {
       if (message.type === 'PING') {
-        if(message.success === true){
-          toast.dismiss(loading)
-          toast.success("Connected to bridge!")
+        toast.dismiss(loadingId)
+
+        if (message.success === true) {
+          toast.success("Connected to bridge!", { id: 'bridge-status' })
         } else {
-          toast.dismiss(loading)
-          toast.error("Failed to connect to bridge!")
-          toast.error(message.error)
+          const errorMsg = message.message || message.error || "Unknown error"
+          toast.error(`Bridge Failed: ${errorMsg}`, { id: 'bridge-status' })
         }
       }
+    }
+
+    browser.runtime.onMessage.addListener(handleMessage)
+
+    browser.runtime.sendMessage({ type: 'PING' }).catch(() => {
+        toast.dismiss(loadingId)
+        toast.error("Background script unreachable", { id: 'bridge-status' }) 
     })
 
-    browser.runtime.sendMessage({ type: 'PING' })
-
+    return () => {
+      browser.runtime.onMessage.removeListener(handleMessage)
+      toast.dismiss(loadingId)
+    }
   }, [])
 
   const CurrentTabComp = tabs.find((tab) => tab.name === currentTab.name)!.component
