@@ -53,15 +53,22 @@ jobs:
         run: npm ci
       - name: Zip extensions
         run: npm run zip
-      - name: Submit to Firefox Addons
+        
+      - name: Submit to Web Stores
         run: |
           npx wxt submit \
             --firefox-zip ${{ env.DIRECTORY }}/${{env.PROJECT_NAME}}-${{needs.Version.outputs.version }}-firefox.zip \
-            --firefox-sources-zip ${{ env.DIRECTORY }}/${{env.PROJECT_NAME}}-${{needs.Version.outputs.version }}-sources.zip
+            --firefox-sources-zip ${{ env.DIRECTORY }}/${{env.PROJECT_NAME}}-${{needs.Version.outputs.version }}-sources.zip \
+            --chrome-zip ${{ env.DIRECTORY }}/${{env.PROJECT_NAME}}-${{needs.Version.outputs.version }}-chrome.zip
         env:
           FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
           FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
           FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          
       - name: Create Release
         uses: softprops/action-gh-release@v2
         env:
@@ -73,4 +80,5 @@ jobs:
           prerelease: true
           files: |
             ${{ env.DIRECTORY }}/${{env.PROJECT_NAME}}-${{ needs.Version.outputs.version }}-firefox.zip
+            ${{ env.DIRECTORY }}/${{env.PROJECT_NAME}}-${{ needs.Version.outputs.version }}-chrome.zip
             ${{ env.DIRECTORY }}/${{env.PROJECT_NAME}}-${{ needs.Version.outputs.version }}-sources.zip
