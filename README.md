@@ -7,7 +7,7 @@ Download game assets directly into your project folder.
 <img 
   src="img/screenshots/screen.png" 
   alt="Desktop Screenshot"
-  style="max-width: 800px; max-height: 800px; object-fit: contain; border-radius: 12px;"
+  style="max-width: 800px; max-height: 600px; object-fit: contain; border-radius: 12px;"
 />
 
 [![Firefox Add-on](https://img.shields.io/badge/Firefox_Add--on-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/asset-drop/)
