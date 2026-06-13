@@ -39,6 +39,7 @@ Optional auto-unzip and file organization<br>
 [![Development](https://img.shields.io/badge/Development-65a1ea?style=for-the-badge&logo=typescript&logoColor=white)](./docs/DEVELOPMENT.md)
 [![Running](https://img.shields.io/badge/Running-4d92e7?style=for-the-badge&logo=gnubash&logoColor=white)](./docs/RUNNING.md)
 [![Building](https://img.shields.io/badge/Building-3584e4?style=for-the-badge&logo=npm&logoColor=white)](./docs/BUILDING.md)
+[![Designs](https://img.shields.io/badge/Designs-F24E1E?style=for-the-badge&logo=figma&logoColor=white)](https://www.figma.com/design/tCGLURdrEGnlnZ5QtzZYet/asset-drop?node-id=107-767&p=f)
 
 </div>
 

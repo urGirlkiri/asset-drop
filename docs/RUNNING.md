@@ -36,11 +36,10 @@ Then open [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-
 ## Install From Addon Store
 
 
-<link href="https://addons.mozilla.org/en-US/firefox/addon/asset-drop/">
-    
+<a href="https://addons.mozilla.org/en-US/firefox/addon/asset-drop/" target="_blank">
     <img
       src="../img/docs/add.png"
       alt="Add From Firefox Screenshot"
       style="max-width: 800px; max-height: 800px; object-fit: contain; border-radius: 12px;"
     />
-</link>
+</a>
