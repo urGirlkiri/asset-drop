@@ -1,122 +1,49 @@
+<div align="center">
+
 # Asset Drop
 
 Download game assets directly into your project folder.
 
-## Disclaimer
+<img 
+  src="img/screenshots/screen.png" 
+  alt="Desktop Screenshot"
+  style="max-width: 800px; max-height: 800px; object-fit: contain; border-radius: 12px;"
+/>
 
-This program is for educational purposes only and only works for free assets
+[![Firefox Add-on](https://img.shields.io/badge/Firefox_Add--on-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/asset-drop/)
+[![Chrome Web Store [BETA]](https://img.shields.io/badge/Chrome_Web_Store-329c4c?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/piglkcgaonkhnkfiiehpjblfnilmihgm)
 
-## How to Install
+## Usage
 
-### Clone Repo
+Click the extension icon or open the side panel<br>
+Drop an Itch.io asset URL into the dropzone<br>
+Select a project destination<br>
+The asset will be downloaded and saved to your chosen folder<br>
 
-```bash
-git clone https://github.com/urGirlkiri/asset-drop.git
-```
-### Change Dir
+### Supported Sites
 
-```bash
-cd asset-drop
-```
+[Itch.io](https://itch.io)
 
-### Instal Deps
+### Features
 
-```bash
-npm i
-```
+Auto-download assets from Itch.io<br>
+Project management with custom destinations<br>
+Download history tracking<br>
+Optional auto-unzip and file organization<br>
 
-## Setup Native Bridge
+### Documentation
 
-The Native Bridge is required for the extension to save files to your disk and open folder dialogs.
+<div align="center">
 
-## 🐧 Linux
+[![Setup](https://img.shields.io/badge/Setup-7eb0ed?style=for-the-badge&logo=bookstack&logoColor=white)](./docs/SETUP.md)
+[![Development](https://img.shields.io/badge/Development-65a1ea?style=for-the-badge&logo=typescript&logoColor=white)](./docs/DEVELOPMENT.md)
+[![Running](https://img.shields.io/badge/Running-4d92e7?style=for-the-badge&logo=gnubash&logoColor=white)](./docs/RUNNING.md)
+[![Building](https://img.shields.io/badge/Building-3584e4?style=for-the-badge&logo=npm&logoColor=white)](./docs/BUILDING.md)
 
-### 1. Change Dir to Host
+</div>
 
-```bash
-cd host
-```
+### ‼️ Disclaimer ‼️
 
-### 2. Install Bridge
+This program is for educational purposes only and only works for free public assets!
 
-```bash
-chmod +x install.sh && ./install.sh
-```
-
-## 🪟 Windows
-
-### 1. Change Dir to Host
-
-```bash
-cd host
-```
-
-### 2. Install Bridge
-
-```bash
-.\install_host.bat
-```
-_(Or simply double-click install_host.bat in File Explorer)_
-
-## How to Install Extension
-
-### Install From Addon Store
-
-https://addons.mozilla.org/en-US/firefox/addon/asset-drop/
-
-
-![alt text](assets/readme/add.png)
-
-### Install From Source
-
-#### Zip Extension
-
-
-```bash
-npm run zip
-```
-
-#### Open Firefox
-
-[about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox
-)
-
-#### Load Temporary Extension
-
-![alt text](assets/readme/load.png)
-
-
-#### Select the Zip File
-
-![alt text](assets/readme/select.png)
-
-#### Done
-
-
-![alt text](assets/readme/done.png)
-
-
-## How to Debug
-
-
-### 🐧 Linux
-
-#### View Logs
-
-```bash
-tail -f /tmp/assetdrop_debug.log
-```
-
-#### Clear Logs 
-
-```bash
-rm /tmp/assetdrop_debug.log
-```
-
-### 🪟 Windows
-
-#### View Logs
-
-```bash
-Get-Content $env:TEMP\assetdrop_debug.log -Wait
-```
+</div>
